@@ -1,21 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Button,
-  TouchableWithoutFeedback,
-  Animated,
-} from 'react-native';
+import { useEffect, useRef } from 'react';
+import { StyleSheet, TouchableWithoutFeedback, Animated } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import StartModal from '../components/modal/start-modal';
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import { View } from '../components/Themed';
 import { RootState } from '../store';
-import { displayModal } from '../store/services/modal';
+import { displayModal, ModalType } from '../store/services/modal';
 
 export default function ModalScreen() {
   const visible = useSelector((state: RootState) => state.modal.showModal);
+  const modalType = useSelector((state: RootState) => state.modal.modalType);
   const dispatch = useDispatch();
 
   const translation = new Animated.Value(0);
@@ -31,10 +25,6 @@ export default function ModalScreen() {
     ],
   };
 
-  // useEffect(() => {
-  //   dispatch(displayModal(visible));
-  // }, [visible]);
-
   useEffect(() => {
     visible &&
       Animated.timing(translation, {
@@ -45,27 +35,24 @@ export default function ModalScreen() {
   }, [visible]);
 
   const handleClose = (event: any) => {
-    event?.target?.id === 'overlay' && dispatch(displayModal(false));
+    event?.target?.id === 'overlay' &&
+      dispatch(displayModal({ showModal: false }));
+  };
+
+  const getModalContent = (modalType?: ModalType) => {
+    switch (modalType) {
+      case ModalType.Start:
+        return <StartModal />;
+      default:
+        return null;
+    }
   };
 
   return visible ? (
     <TouchableWithoutFeedback onPress={handleClose}>
       <View style={styles.container} nativeID="overlay">
         <Animated.View style={[styles.content, animationStyle]}>
-          <Text style={styles.title}>Modal</Text>
-          <View
-            style={styles.separator}
-            lightColor="#eee"
-            darkColor="rgba(255,255,255,0.1)"
-          />
-          <EditScreenInfo path="/screens/ModalScreen.tsx" />
-          <Button
-            onPress={() => dispatch(displayModal(false))}
-            title="Dismiss"
-          />
-
-          {/* Use a light status bar on iOS to account for the black space above the modal */}
-          <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+          {getModalContent(modalType)}
         </Animated.View>
       </View>
     </TouchableWithoutFeedback>
@@ -85,14 +72,12 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: 'white',
-    alignItems: 'center',
-    paddingTop: '1em',
-    paddingBottom: '1em',
+    padding: 15,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
   },
   separator: {

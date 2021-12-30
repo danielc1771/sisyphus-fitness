@@ -9,7 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { displayModal } from '../store/services/modal';
+import { displayModal, ModalType } from '../store/services/modal';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -86,7 +86,9 @@ const Navigation = React.memo(function Navigation() {
           listeners={() => ({
             tabPress: (event) => {
               event.preventDefault();
-              dispatch(displayModal(true));
+              dispatch(
+                displayModal({ showModal: true, modalType: ModalType.Start })
+              );
             },
           })}
         />

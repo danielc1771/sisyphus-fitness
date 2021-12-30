@@ -33,5 +33,7 @@ const styles = StyleSheet.create({
     height: 45,
     width: 45,
     borderRadius: 40,
+    borderColor: 'black',
+    borderWidth: 3,
   },
 });
